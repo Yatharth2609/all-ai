@@ -9,11 +9,15 @@ const settingsUrl = absoluteUrl("/settings");
  
 export async function GET() {
   try {
-    const { userId } = auth();
+    const { userId } = await auth();
     const user = await currentUser();
 
     if (!userId || !user) {
       return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    if (!process.env.NEXT_PUBLIC_APP_URL) {
+      return new NextResponse("Missing NEXT_PUBLIC_APP_URL", { status: 500 });
     }
 
     const userSubscription = await prismadb.userSubscription.findUnique({
